@@ -1,149 +1,178 @@
-let fullName = $('#FullName');
-let username = $('#Username');
-let email = $('#Email');
-let password = $('#Password');
-let repeat = $('#RepeatPassword');
-let checkbox = $('#checkbox');
-let form = $("#registration-form");
-let button = $('#btn');
-let account = $('#account')
-let error = $('#error');
-let clients = localStorage.getItem('clients');
-let clientsArray = [];
-let user = {};
-checkbox.click(function (e) {
-    e.target.checked ? console.log("Согласен") : console.log("Не согласен");
-});
-
-button.click(function () {
-    if (!fullName.val().match(/^[A-Za-zА-Яа-яёЁ_]+$/)) {
-        fullName.next().show();
-        fullName.css('border-bottom', '1px solid red');
-        return;
-    } else {
-        fullName.css('border-bottom', '1px solid rgba(198, 198, 196, 1)');
-        fullName.next().hide();
-        user.Name = $('#FullName').val();
-    }
-    if (!username.val().match(/^[A-Za-z0-9\-\w]+$/)) {
-        username.next().show();
-        username.css('border-bottom', '1px solid red');
-        return;
-    } else {
-        username.css('border-bottom', '1px solid rgba(198, 198, 196, 1)');
-        username.next().hide();
-        user.Username = $('#Username').val();
-    }
-    if (!email.val().match((/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,6}/))) {
-        email.next().show();
-        email.css('border-bottom', '1px solid red');
-        return;
-    } else {
-        email.css('border-bottom', '1px solid rgba(198, 198, 196, 1)');
-        email.next().hide();
-        user.Email = $('#Email').val();
-
-    }
-    if (!password.val().match(/^(?=.*[A-Z])(?=.*\d)(?=.*[+*/!?@#$%^&()_={};:,.<>|]).{8,}$/)) {
-        password.next().show();
-        password.css('border-bottom', '1px solid red');
-        return;
-    } else {
-        password.css('border-bottom', '1px solid rgba(198, 198, 196, 1)');
-        password.next().hide();
-        user.Password = $('#Password').val();
-    }
-    if (!repeat.val().match(/^(?=.*[A-Z])(?=.*\d)(?=.*[+*/!?@#$%^&()_={};:,.<>|]).{8,}$/)) {
-        repeat.next().show();
-        repeat.css('border-bottom', '1px solid red');
-        return;
-    } else {
-        repeat.css('border-bottom', '1px solid rgba(198, 198, 196, 1)');
-        repeat.next().hide();
-    }
-    if (password.val() !== repeat.val()) {
-        alert("Пароли не совпадают");
-        return;
-    }
-    if (!checkbox.prop('checked')) {
-        alert("Согласитесь с правилами")
-        return;
-    }
-    confirm("На вашу почту выслана ссылка, перейдите по ней, чтобы завершить регистрацию");
-    if (clients) {
-        clientsArray = JSON.parse(clients);
-    }
-    clientsArray.push(user);
-    localStorage.setItem('clients', JSON.stringify(clientsArray));
-    form.trigger('reset');
-    LogInAccount();
-});
-
-
-account.click(function () {
-    LogInAccount();
-});
-
-
-function LogInAccount() {
-    $('#full').remove();
-    $('#mail').remove();
-    $('#pass').remove();
-    $('#check').remove();
-    account.text('Registration');
-    $('#text').text("Log in to the system");
-    button.val("Sign In");
+window.onload = function () {
+    let fullName = $('#FullName');
+    let username = $('#Username');
+    let email = $('#Email');
+    let password = $('#Password');
+    let repeat = $('#RepeatPassword');
+    let checkbox = $('#checkbox');
+    let form = $("#registration-form");
+    let button = $('#btn');
+    let account = $('#account')[0];
+    let error = $('.error');
+    let popup = $('.popup');
+    let popbtn = $('#popbtn')[0];
+    let clients = localStorage.getItem('clients');
+    let clientsArray = [];
+    let user = {};
+    popup.hide();
     button.click(function () {
-        if (!username.val()) {
-            username.next().show();
-            username.css('border-bottom', '1px solid red');
-            return;
+        let hasError = false;
+        if (!fullName.val()) {
+            fullName.addClass('error__text');
+            fullName.next().show();
+            hasError = true;
+        } else if (!fullName.val().match(/^([A-Za-zА-Яа-яёЁ]+)\s+([A-Za-zА-Яа-яёЁ]+)$/)) {
+            fullName.addClass('error__text');
+            fullName.next().text("Полное имя должно состоять из двух слов!").show();
         } else {
-            username.css('border-bottom', '1px solid rgba(198, 198, 196, 1)');
+            fullName.removeClass('error__text');
+            fullName.next().hide();
+        }
+        if (!username.val()) {
+            username.addClass('error__text');
+            username.next().show();
+            hasError = true;
+        } else if (!username.val().match(/^[A-Za-z0-9\-\w]+$/)) {
+            username.addClass('error__text');
+            username.next().text("Логин содержит только латинские буквы, цифры и тире!").show();
+        } else {
+            username.removeClass('error__text');
             username.next().hide();
         }
-        if (!password.val()) {
-            password.next().show();
-            password.css('border-bottom', '1px solid red');
-            return;
-        } else {
-            password.css('border-bottom', '1px solid rgba(198, 198, 196, 1)');
-            password.next().hide();
+        if (!email.val()) {
+            email.addClass('error__text');
+            email.next().show();
+            hasError = true;
+        } else if (!email.val().match((/^\w+@[a-zA-Z0-9/._]+?\.[a-zA-Z]{2,6}/))) {
+            email.addClass('error__text');
+            email.next().text("Введите существующий email!").show();
         }
-        let userName = username.val().trim();
-        let Password = password.val()
-        localStorage.getItem('clients')
-        clientsArray = JSON.parse(clients);
-        const user = clientsArray.find(clients => clients.Username === userName);
-        if (!user) {
-            username.css('border-bottom', '1px solid red');
-            username.next().show();
-            error.text('Такой пользователь не зарегистрирован')
+        else if (email.val() === clients.Email) {
+            email.next().text('Пользователь с такой почтой уже зарегистрирован').show();
         }
         else {
-            if (user.Password !== Password) {
-                password.css('border-bottom', '1px solid red');
-                password.next().show();
-                error.text('Неверный пароль')
-            }
-            else {
-                button.val("Exit");
-                $('#USER').remove();
-                $('#PASSW').remove();
-                $('.text').remove();
-                $('#text').text(`Welcome to ${user.FullName}!`);
-                account.remove();
-                button.click(function () {
-                    location.reload();
-                });
-            }
+            email.removeClass('error__text');
+            email.next().hide();
         }
+        if (!password.val()) {
+            password.addClass('error__text');
+            password.next().show();
+            hasError = true;
+        } else if (!password.val().match(/^(?=.*[A-Z])(?=.*\d)(?=.*[+*/!?@#$%^&()_={};:,.<>|]).{8,}$/)) {
+            password.addClass('error__text');
+            password.next().text("Пароль состоит из 8 символов и включает заглавную букву, цифру и спецсимвол").show();
+        } else {
+            password.removeClass('error__text');
+            password.next().hide();
+        }
+        if (!repeat.val()) {
+            repeat.addClass('error__text');
+            repeat.next().show();
+            hasError = true;
+        } else if (password.val() !== repeat.val()) {
+            repeat.addClass('error__text');
+            repeat.next().text("Пароли не совпадают").show();
+        }
+        else {
+            repeat.removeClass('error__text');
+            repeat.next().hide();
+        }
+        if (!checkbox.prop('checked')) {
+            popup.show();
+            $('.popup__content').text('Согласитесь с правилами');
+            hasError = true;
+            popbtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                popup.hide();
+            })
+        }
+        popbtn.removeEventListener("click",  popup.hide);
+        if (!hasError) {
+            popup.show();
+            $('.popup__content').text('На вашу почту выслана ссылка, перейдите по ней, чтобы завершить регистрацию');
+            if (clients) {
+                clientsArray = JSON.parse(clients);
+            }
+            user.Fullname = $('#FullName').val();
+            user.Username = $('#Username').val();
+            user.Email = $('#Email').val();
+            user.Password = $('#Password').val();
+            clientsArray.push(user);
+            localStorage.setItem('clients', JSON.stringify(clientsArray));
+            popbtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                form.trigger('reset');
+                LogInAccount();
+            })
+        }
+    });
+
+    account.addEventListener("click", function (e) {
+        e.preventDefault();
+        LogInAccount();
     })
-    form.trigger('reset');
+    
+    function LogInAccount() {
+        account.removeEventListener("click", LogInAccount)
+        popup.hide();
+        error.hide();
+        password.removeClass('error__text');
+        username.removeClass('error__text');
+        $('#full').remove();
+        $('#mail').remove();
+        $('#pass').remove();
+        $('#check').remove();
+        account.innerText = 'Registration';
+        $('#text').text("Log in to the system");
+        button.val("Sign In");
+        button.click(function () {
+            if (!username.val()) {
+                username.next().show();
+                username.addClass('error__text');
+                return;
+            } else {
+                username.removeClass('error__text');
+                username.next().hide();
+            }
+            if (!password.val()) {
+                password.next().show();
+                password.addClass('error__text');
+                return;
+            } else {
+                password.removeClass('error__text');
+                password.next().hide();
+            }
+            let userName = username.val().trim();
+            let Password = password.val()
+            clients = localStorage.getItem('clients')
+            clientsArray = JSON.parse(clients);
+            const user = clientsArray.find(clients => clients.Username === userName);
+            if (!user) {
+                username.addClass('error__text');
+                username.next().show();
+                error.text('Такой пользователь не зарегистрирован')
+            } else {
+                if (user.Password !== Password) {
+                    password.addClass('error__text');
+                    password.next().show();
+                    error.text('Неверный пароль')
+                } else {
+                    button.val("Exit");
+                    $('#USER').remove();
+                    $('#PASSW').remove();
+                    $('.text').remove();
+                    $('#text').text(`Welcome to ${user.Fullname}!`);
+                    account.remove();
+                    button.click(function () {
+                        location.reload();
+                    });
+                }
+            }
+        })
+        form.trigger('reset');
+        account.addEventListener('click', function (e) {
+            e.preventDefault();
+            location.reload();
+        })
+    }
 }
-
-
-account.click(function () {
-    location.reload();
-});
-

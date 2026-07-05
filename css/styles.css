@@ -1,8 +1,9 @@
-*{
+* {
     margin: 0;
     padding: 0;
 }
-@font-face{
+
+@font-face {
     font-family: 'Nunito';
     src: url('../fonts/Nunitoregular.woff');
 }
@@ -20,7 +21,8 @@ body {
     flex-direction: column;
     align-items: center;
 }
-.logo{
+
+.logo {
     position: relative;
     margin-top: 27px;
 }
@@ -32,14 +34,14 @@ body {
     flex-direction: row;
 }
 
-.registration__info{
+.registration__info {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 50%;
 }
 
-.registration__image{
+.registration__image {
     display: flex;
     max-width: 920px;
     align-items: center;
@@ -51,18 +53,21 @@ body {
     margin-top: 194px;
 
 }
-.head{
+
+.head {
     font-family: 'Nunito', sans-serif;
     font-size: 36px;
     line-height: 49px;
 }
-.text{
+
+.text {
     font-family: 'Nunito', sans-serif;
-    color:rgba(99, 99, 99, 1);
+    color: rgba(99, 99, 99, 1);
     font-size: 22px;
     line-height: 27px;
     margin-top: 7px;
 }
+
 .info__form {
     margin-top: 42px;
     display: flex;
@@ -77,7 +82,9 @@ body {
     margin-top: 20px;
     font-family: 'Nunito', sans-serif;
     color: rgba(198, 198, 196, 1);
+    max-width: 452px;
 }
+
 .input {
     border: none;
     border-bottom: 1px solid rgba(198, 198, 196, 1);
@@ -87,16 +94,21 @@ body {
     font-size: 20px;
     line-height: 27px;
 }
+
 .input:focus {
     outline-color: rgb(164, 164, 164);
 }
+
 .info__checkbox {
     margin-top: 30px;
     color: rgba(99, 99, 99, 1);
+    display: flex;
+
 }
-.btn{
+
+.btn {
     margin-top: 40px;
-    color:rgba(255, 255, 255, 1);
+    color: rgba(255, 255, 255, 1);
     font-size: 20px;
     line-height: 27px;
     font-family: 'Nunito', sans-serif;
@@ -107,16 +119,17 @@ body {
     cursor: pointer;
 }
 
-.info__account{
+.info__account {
     text-decoration: none;
     color: rgba(99, 99, 99, 1);
     margin-top: 44px;
 }
+
 .image__img {
     max-width: 100%;
 }
 
-input:focus{
+input:focus {
     outline: none;
 }
 
@@ -124,4 +137,42 @@ input:focus{
     margin-top: 5px;
     color: red;
     display: none;
+}
+
+.error__text {
+    border-bottom: 1px solid red;
+}
+
+.popup {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    width: 320px;
+    max-height: 90px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.75);
+    padding: 20px;
+    border-radius: 10px;
+    background: linear-gradient(to right, rgb(255, 255, 255) 0%, rgb(248, 248, 250) 50%, rgb(232, 232, 235) 100%);
+    transform: translate(0, 500px);
+    transition: transform 1s;
+}
+
+.popup__content {
+    font-size: 14px;
+    font-family: 'Nunito', sans-serif;
+}
+
+.popup__close {
+    margin-top: 8px;
+    align-self: end;
+}
+
+.popup__button {
+    padding: 8px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: rgba(221, 49, 66, 1);
+    color: white;
+    width: 60px;
 }
