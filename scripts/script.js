@@ -17,88 +17,10 @@ window.onload = function () {
     let user = {};
 
     button.addEventListener('click', registration);
+
     function registration() {
         let hasError = false;
-        let clientsArray = JSON.parse(localStorage.getItem('clients')) || [];
-        let currentEmail = email.val().trim().toLowerCase();
-        let emailExists = clientsArray.some(client => client.Email === currentEmail);
-        if (!fullName.val()) {
-            fullName.addClass('error__text');
-            fullName.next().show();
-            hasError = true;
-        } else if (!fullName.val().match(/^([A-Za-zА-Яа-яёЁ\s]+)$/)) {
-            fullName.addClass('error__text');
-            fullName.next().text("Имя не должно содержать цифры!").show();
-            hasError = true;
-        } else {
-            fullName.removeClass('error__text');
-            fullName.next().hide();
-        }
-        if (!username.val()) {
-            username.addClass('error__text');
-            username.next().show();
-            hasError = true;
-        } else if (!username.val().match(/^[A-Za-z0-9\-\w]+$/)) {
-            username.addClass('error__text');
-            username.next().text("Логин содержит только латинские буквы, цифры и тире!").show();
-            hasError = true;
-        } else {
-            username.removeClass('error__text');
-            username.next().hide();
-        }
-        if (!email.val()) {
-            email.addClass('error__text');
-            email.next().show();
-            hasError = true;
-        } else if (!email.val().match((/^[^\s@]+@[^\s@]+\.[^\s@]+$/))) {
-            email.addClass('error__text');
-            email.next().text("Введите существующий email!").show();
-            hasError = true;
-        }
-        else if (emailExists) {
-            email.next().text('Пользователь с такой почтой уже зарегистрирован').show();
-            hasError = true;
-        }
-        else {
-            email.removeClass('error__text');
-            email.next().hide();
-        }
-        if (!password.val()) {
-            password.addClass('error__text');
-            password.next().show();
-            hasError = true;
-        } else if (!password.val().match(/^(?=.*[A-Z])(?=.*\d)(?=.*[+*/!?@#$%^&()_={};:,.<>|]).{8,}$/)) {
-            password.addClass('error__text');
-            password.next().text("Пароль состоит из 8 символов и включает заглавную букву, цифру и спецсимвол").show();
-            hasError = true;
-        } else {
-            password.removeClass('error__text');
-            password.next().hide();
-        }
-        if (!repeat.val()) {
-            repeat.addClass('error__text');
-            repeat.next().show();
-            hasError = true;
-        } else if (password.val() !== repeat.val()) {
-            repeat.addClass('error__text');
-            repeat.next().text("Пароли не совпадают").show();
-            hasError = true;
-        }
-        else {
-            repeat.removeClass('error__text');
-            repeat.next().hide();
-        }
-        if (!checkbox.prop('checked')) {
-            popup.show()
-            popup.css('display', 'flex');
-            $('.popup__content').text('Согласитесь с правилами');
-            hasError = true;
-            popbtn.addEventListener("click", function (e) {
-                e.preventDefault();
-                popup.hide();
-            })
-        }
-        popbtn.removeEventListener("click",  popup.hide);
+        hasError = validateRegisterForm();
         if (!hasError) {
             popup.show();
             $('.popup__content').text('На вашу почту выслана ссылка, перейдите по ней, чтобы завершить регистрацию');
@@ -118,6 +40,7 @@ window.onload = function () {
             })
         }
     }
+
     const onAccountClick = (e) => {
         e.preventDefault();
         LogInAccount();
@@ -125,21 +48,10 @@ window.onload = function () {
     account.addEventListener("click", onAccountClick);
 
     function LogInAccount() {
-        account.removeEventListener("click", onAccountClick)
-        popup.hide();
-        error.hide();
-        password.removeClass('error__text');
-        username.removeClass('error__text');
-        $('#full').remove();
-        $('#mail').remove();
-        $('#pass').remove();
-        $('#check').remove();
-        account.innerText = 'Registration';
-        Welcome.text("Log in to the system");
-        button.value = "Sign In";
+        removeRegistrationElements()
         button.removeEventListener("click", registration);
-        button.addEventListener('click', login);
-        function login() {
+        button.addEventListener('click', validation);
+        function validation() {
             if (!username.val()) {
                 username.next().show();
                 username.addClass('error__text');
@@ -177,12 +89,121 @@ window.onload = function () {
                     $('.text').remove();
                     Welcome.text(`Welcome to ${user.Fullname}!`);
                     account.remove();
-                    button.removeEventListener("click", login);
+                    button.removeEventListener("click", validation);
                     button.addEventListener("click", () => location.reload())
                 }
             }
         }
+
         form.trigger('reset');
         account.addEventListener('click', () => location.reload())
+    }
+    function removeRegistrationElements() {
+        account.removeEventListener("click", onAccountClick)
+        popup.hide();
+        error.hide();
+        password.removeClass('error__text');
+        username.removeClass('error__text');
+        $('#full').remove();
+        $('#mail').remove();
+        $('#pass').remove();
+        $('#check').remove();
+        account.innerText = 'Registration';
+        Welcome.text("Log in to the system");
+        button.value = "Sign In";
+
+    }
+    function validateRegisterForm() {
+        let clientsArray = JSON.parse(localStorage.getItem('clients')) || [];
+        let currentEmail = email.val().trim().toLowerCase();
+        let currentUsername = username.val().trim()
+        let currentPassword = password.val().trim()
+        let emailExists = clientsArray.some(client => client.Email === currentEmail);
+        let UsernameExists = clientsArray.some(client => client.Username === currentUsername);
+        let passwordExists = clientsArray.some(client => client.Password === currentPassword);
+        if (!fullName.val()) {
+            fullName.addClass('error__text');
+            fullName.next().show();
+            return true;
+        } else if (!fullName.val().match(/^([A-Za-zА-Яа-яёЁ\s]+)$/)) {
+            fullName.addClass('error__text');
+            fullName.next().text("Имя не должно содержать цифры!").show();
+            return true;
+        } else {
+            fullName.removeClass('error__text');
+            fullName.next().hide();
+        }
+        if (!username.val()) {
+            username.addClass('error__text');
+            username.next().show();
+            return true;
+        } else if (!username.val().match(/^[A-Za-z0-9\-\w]+$/)) {
+            username.addClass('error__text');
+            username.next().text("Логин содержит только латинские буквы, цифры и тире!").show();
+            return true;
+        } else if (UsernameExists) {
+            username.addClass('error__text');
+            username.next().text('Пользователь с таким Username уже зарегистрирован').show();
+            return true;
+        } else {
+            username.removeClass('error__text');
+            username.next().hide();
+        }
+        if (!email.val()) {
+            email.addClass('error__text');
+            email.next().show();
+            return true;
+        } else if (!email.val().match((/^[^\s@]+@[^\s@]+\.[^\s@]+$/))) {
+            email.addClass('error__text');
+            email.next().text("Введите существующий email!").show();
+            return true;
+        } else if (emailExists) {
+            email.next().text('Пользователь с такой почтой уже зарегистрирован').show();
+            return true;
+        } else {
+            email.removeClass('error__text');
+            email.next().hide();
+        }
+        if (!password.val()) {
+            password.addClass('error__text');
+            password.next().show();
+            return true;
+        } else if (!password.val().match(/^(?=.*[A-Z])(?=.*\d)(?=.*[+*/!?@#$%^&()_={};:,.<>|]).{8,}$/)) {
+            password.addClass('error__text');
+            password.next().text("Пароль состоит из 8 символов и включает заглавную букву, цифру и спецсимвол").show();
+            return true;
+        } else if (UsernameExists && passwordExists) {
+            password.addClass('error__text');
+            password.next().text('Пользователь с таким паролем уже зарегистрирован')
+            return true;
+        }
+        else {
+            password.removeClass('error__text');
+            password.next().hide();
+        }
+        if (!repeat.val()) {
+            repeat.addClass('error__text');
+            repeat.next().show();
+            return true;
+        } else if (password.val() !== repeat.val()) {
+            repeat.addClass('error__text');
+            repeat.next().text("Пароли не совпадают").show();
+            return true;
+        } else {
+            repeat.removeClass('error__text');
+            repeat.next().hide();
+        }
+        if (!checkbox.prop('checked')) {
+            popup.show()
+            popup.css('display', 'flex');
+            $('.popup__content').text('Согласитесь с правилами');
+            function PopupHide (e){
+                e.preventDefault();
+                popup.hide();
+                popbtn.removeEventListener("click", PopupHide);
+            }
+            popbtn.addEventListener("click", PopupHide);
+            return true;
+        }
     }
 }
